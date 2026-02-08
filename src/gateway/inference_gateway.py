@@ -11,9 +11,12 @@ from abc import ABC, abstractmethod
 from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
 
-from src.gateway.models import InferenceRequest, InferenceResponse, TokenUsage
+from src.gateway.models import (
+    InferenceRequest,
+    InferenceResponse,
+    TokenUsage,
+)
 from src.shared.config import get_settings
-
 
 logger = logging.getLogger(__name__)
 

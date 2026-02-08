@@ -10,7 +10,6 @@ from chromadb.config import Settings as ChromaSettings
 
 from src.shared.config import get_settings
 
-
 logger = logging.getLogger(__name__)
 
 

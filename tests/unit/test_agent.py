@@ -6,9 +6,18 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from src.agents.marketing.agent import MarketingAgent
-from src.agents.marketing.models import GeneratePostRequest, GeneratedPost
-from src.agents.marketing.tools import WebSearchResult, WebSearchTool
-from src.gateway.models import InferenceResponse, TokenUsage
+from src.agents.marketing.models import (
+    GeneratedPost,
+    GeneratePostRequest,
+)
+from src.agents.marketing.tools import (
+    WebSearchResult,
+    WebSearchTool,
+)
+from src.gateway.models import (
+    InferenceResponse,
+    TokenUsage,
+)
 
 
 @pytest.fixture

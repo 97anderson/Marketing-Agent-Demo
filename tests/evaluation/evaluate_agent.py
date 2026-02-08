@@ -15,7 +15,6 @@ from src.agents.marketing.models import GeneratePostRequest
 from src.gateway.inference_gateway import InferenceGateway
 from src.shared.logger import setup_logging
 
-
 setup_logging()
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,6 @@ from src.agents.marketing.models import (
 from src.shared.config import get_settings
 from src.shared.logger import setup_logging
 
-
 # Setup logging
 setup_logging()
 logger = logging.getLogger(__name__)

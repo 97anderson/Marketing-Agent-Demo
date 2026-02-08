@@ -7,11 +7,13 @@ import logging
 import uuid
 from datetime import datetime
 
-from src.agents.marketing.models import GeneratedPost, GeneratePostRequest
+from src.agents.marketing.models import (
+    GeneratedPost,
+    GeneratePostRequest,
+)
 from src.agents.marketing.tools import WebSearchTool
 from src.gateway.inference_gateway import InferenceGateway
 from src.shared.database import VectorDatabase
-
 
 logger = logging.getLogger(__name__)
 
