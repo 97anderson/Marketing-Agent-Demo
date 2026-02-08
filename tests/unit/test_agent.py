@@ -1,12 +1,13 @@
 """Unit tests for the Marketing Agent."""
 
-import pytest
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from src.agents.marketing.agent import MarketingAgent
 from src.agents.marketing.models import GeneratePostRequest, GeneratedPost
-from src.agents.marketing.tools import WebSearchTool, WebSearchResult
+from src.agents.marketing.tools import WebSearchResult, WebSearchTool
 from src.gateway.models import InferenceResponse, TokenUsage
 
 
@@ -49,9 +50,9 @@ def marketing_agent(mock_gateway, mock_database):
 async def test_web_search_tool():
     """Test WebSearchTool returns results."""
     tool = WebSearchTool()
-    
+
     results = await tool.search("artificial intelligence")
-    
+
     assert len(results) > 0
     assert all(isinstance(r, WebSearchResult) for r in results)
     assert all(r.title and r.snippet and r.url for r in results)
@@ -65,9 +66,9 @@ async def test_generate_post(marketing_agent, mock_gateway):
         tone="professional",
         max_length=500
     )
-    
+
     post = await marketing_agent.generate_post(request)
-    
+
     assert isinstance(post, GeneratedPost)
     assert post.topic == "artificial intelligence"
     assert post.tone == "professional"
@@ -75,7 +76,7 @@ async def test_generate_post(marketing_agent, mock_gateway):
     assert len(post.content) > 0
     assert post.usage.total_tokens > 0
     assert post.id is not None
-    
+
     # Verify gateway was called
     mock_gateway.generate.assert_called_once()
 
@@ -87,12 +88,12 @@ async def test_generate_post_saves_to_memory(marketing_agent, mock_database):
         topic="machine learning",
         tone="enthusiastic"
     )
-    
+
     post = await marketing_agent.generate_post(request)
-    
+
     # Verify database was called
     mock_database.add_document.assert_called_once()
-    
+
     # Check the call arguments
     call_args = mock_database.add_document.call_args
     assert call_args.kwargs["document_id"] == post.id
@@ -107,9 +108,9 @@ async def test_get_history_empty(marketing_agent, mock_database):
         "documents": [],
         "metadatas": []
     }
-    
+
     history = marketing_agent.get_history(limit=10)
-    
+
     assert len(history) == 0
 
 
@@ -141,9 +142,9 @@ async def test_get_history_with_posts(marketing_agent, mock_database):
             }
         ]
     }
-    
+
     history = marketing_agent.get_history(limit=10)
-    
+
     assert len(history) == 2
     assert all(isinstance(post, GeneratedPost) for post in history)
     assert history[0].id == "post-1"
@@ -164,9 +165,9 @@ def test_build_context(marketing_agent):
             url="https://example.com/2"
         )
     ]
-    
+
     context = marketing_agent._build_context(search_results)
-    
+
     assert "Test Title 1" in context
     assert "Test Title 2" in context
     assert "Test snippet 1" in context
@@ -183,10 +184,9 @@ def test_create_prompt(marketing_agent):
         tone="professional",
         max_length=500
     )
-    
+
     assert "AI" in prompt
     assert "Test context about AI" in prompt
     assert "professional" in prompt
     assert "500" in prompt
     assert "LinkedIn" in prompt
-

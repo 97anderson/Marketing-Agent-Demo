@@ -4,7 +4,6 @@ This module implements the tools available to the Marketing Agent.
 """
 
 import logging
-from typing import Dict, List
 
 from pydantic import BaseModel, Field
 
@@ -14,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 class WebSearchResult(BaseModel):
     """Result from a web search.
-    
+
     Attributes:
         title: Title of the search result.
         snippet: Brief snippet of the content.
         url: URL of the source.
     """
-    
+
     title: str = Field(..., description="Title of the search result")
     snippet: str = Field(..., description="Brief snippet of the content")
     url: str = Field(..., description="URL of the source")
@@ -28,41 +27,41 @@ class WebSearchResult(BaseModel):
 
 class WebSearchTool:
     """Simulated web search tool for the Marketing Agent.
-    
+
     This tool simulates searching the web for information about a topic.
     In production, this would integrate with real search APIs.
     """
-    
+
     name: str = "web_search"
     description: str = "Search the web for information about a specific topic"
-    
+
     def __init__(self):
         """Initialize the web search tool."""
         logger.info("WebSearchTool initialized (simulated mode)")
-    
-    async def search(self, query: str) -> List[WebSearchResult]:
+
+    async def search(self, query: str) -> list[WebSearchResult]:
         """Perform a simulated web search.
-        
+
         Args:
             query: The search query.
-            
+
         Returns:
             List of search results with titles, snippets, and URLs.
         """
         logger.info(f"WebSearchTool: Searching for '{query}'")
-        
+
         # Simulated search results based on the query
         results = self._get_mock_results(query)
-        
+
         logger.info(f"WebSearchTool: Found {len(results)} results")
         return results
-    
-    def _get_mock_results(self, query: str) -> List[WebSearchResult]:
+
+    def _get_mock_results(self, query: str) -> list[WebSearchResult]:
         """Generate mock search results.
-        
+
         Args:
             query: The search query.
-            
+
         Returns:
             List of mock search results.
         """
@@ -96,10 +95,10 @@ class WebSearchTool:
                 url=f"https://example.com/business-{query.replace(' ', '-').lower()}"
             ),
         ]
-    
-    def get_tool_description(self) -> Dict[str, str]:
+
+    def get_tool_description(self) -> dict[str, str]:
         """Get the tool description for agent configuration.
-        
+
         Returns:
             Dictionary with tool name and description.
         """
@@ -107,4 +106,3 @@ class WebSearchTool:
             "name": self.name,
             "description": self.description
         }
-
