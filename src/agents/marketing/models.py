@@ -19,7 +19,7 @@ class GeneratePostRequest(BaseModel):
         max_length: Maximum length in characters.
     """
 
-    topic: str = Field(..., description="Topic for the LinkedIn post")
+    topic: str = Field(..., min_length=1, description="Topic for the LinkedIn post")
     tone: str = Field(
         default="professional", description="Tone of the post (professional, casual, enthusiastic)"
     )

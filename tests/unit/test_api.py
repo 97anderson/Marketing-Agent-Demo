@@ -1,12 +1,11 @@
 """Unit tests for the FastAPI application."""
 
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 
-from src.agents.marketing.api import app
 from src.agents.marketing.models import GeneratedPost
 from src.gateway.models import TokenUsage
 
@@ -46,11 +45,20 @@ def mock_agent():
 
 
 @pytest.fixture
-def client(mock_agent):
+def client(mock_agent, monkeypatch):
     """Create a test client with mocked agent."""
-    with patch("src.agents.marketing.api.agent", mock_agent):
-        with TestClient(app) as client:
-            yield client
+    # Import the app module
+    from src.agents.marketing import api
+
+    # Set the mock agent BEFORE creating the TestClient
+    # This prevents the lifespan from creating a real agent
+    api.agent = mock_agent
+
+    # Create the test client
+    with TestClient(api.app) as test_client:
+        # Ensure the agent is still mocked during tests
+        api.agent = mock_agent
+        yield test_client
 
 
 def test_root_endpoint(client):
