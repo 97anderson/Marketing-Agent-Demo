@@ -169,7 +169,7 @@ jobs:
     
     - name: Start services with Docker Compose
       run: |
-        docker-compose up -d
+        docker compose up -d
         sleep 10
     
     - name: Wait for API to be healthy
@@ -196,12 +196,12 @@ jobs:
     - name: Check logs
       if: always()
       run: |
-        docker-compose logs
+        docker compose logs
     
     - name: Stop services
       if: always()
       run: |
-        docker-compose down -v
+        docker compose down -v
 
   security-scan:
     name: Security Scan
