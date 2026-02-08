@@ -14,10 +14,7 @@ async def test_mock_model_generate():
     model = MockModel()
 
     request = InferenceRequest(
-        prompt="Test prompt",
-        model="mock-model",
-        temperature=0.7,
-        max_tokens=500
+        prompt="Test prompt", model="mock-model", temperature=0.7, max_tokens=500
     )
 
     response = await model.generate(request)
@@ -36,10 +33,7 @@ async def test_mock_model_token_calculation():
     model = MockModel()
 
     prompt = "This is a test prompt with several words"
-    request = InferenceRequest(
-        prompt=prompt,
-        model="mock-model"
-    )
+    request = InferenceRequest(prompt=prompt, model="mock-model")
 
     response = await model.generate(request)
 
@@ -58,10 +52,7 @@ async def test_inference_gateway_with_mock():
     gateway = InferenceGateway(use_mock=True)
 
     response = await gateway.generate(
-        prompt="Generate a test post",
-        model="gpt-3.5-turbo",
-        temperature=0.7,
-        max_tokens=500
+        prompt="Generate a test post", model="gpt-3.5-turbo", temperature=0.7, max_tokens=500
     )
 
     assert isinstance(response, InferenceResponse)
@@ -76,10 +67,7 @@ async def test_inference_gateway_with_metadata():
 
     metadata = {"agent": "test_agent", "topic": "testing"}
 
-    response = await gateway.generate(
-        prompt="Test prompt",
-        metadata=metadata
-    )
+    response = await gateway.generate(prompt="Test prompt", metadata=metadata)
 
     assert response.metadata == metadata
 

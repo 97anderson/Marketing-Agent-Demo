@@ -58,7 +58,7 @@ app = FastAPI(
     title="Marketing Agent API",
     description="Content-Creator Agent for generating LinkedIn posts",
     version="0.1.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 
@@ -83,7 +83,7 @@ async def root():
         "message": "Marketing Agent API",
         "version": "0.1.0",
         "docs": "/docs",
-        "health": "/health"
+        "health": "/health",
     }
 
 
@@ -100,7 +100,7 @@ async def health_check():
         "status": "healthy",
         "service": "marketing-agent",
         "environment": settings.environment,
-        "using_mock_model": settings.use_mock_model
+        "using_mock_model": settings.use_mock_model,
     }
 
 
@@ -108,7 +108,7 @@ async def health_check():
     "/generate",
     response_model=GeneratePostResponse,
     status_code=status.HTTP_201_CREATED,
-    tags=["Content Generation"]
+    tags=["Content Generation"],
 )
 async def generate_post(request: GeneratePostRequest):
     """Generate a LinkedIn post on the given topic.
@@ -133,24 +133,17 @@ async def generate_post(request: GeneratePostRequest):
         # Generate the post using the agent
         post = await agent.generate_post(request)
 
-        return GeneratePostResponse(
-            post=post,
-            message="Post generated successfully"
-        )
+        return GeneratePostResponse(post=post, message="Post generated successfully")
 
     except Exception as e:
         logger.error(f"Error generating post: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate post: {str(e)}"
+            detail=f"Failed to generate post: {str(e)}",
         )
 
 
-@app.get(
-    "/history",
-    response_model=PostHistory,
-    tags=["Content History"]
-)
+@app.get("/history", response_model=PostHistory, tags=["Content History"])
 async def get_history(limit: int = 10):
     """Get the history of generated posts.
 
@@ -171,16 +164,13 @@ async def get_history(limit: int = 10):
         # Get history from the agent
         posts = agent.get_history(limit=limit)
 
-        return PostHistory(
-            posts=posts,
-            total=len(posts)
-        )
+        return PostHistory(posts=posts, total=len(posts))
 
     except Exception as e:
         logger.error(f"Error retrieving history: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve history: {str(e)}"
+            detail=f"Failed to retrieve history: {str(e)}",
         )
 
 
@@ -201,7 +191,7 @@ async def get_metrics():
         return {
             "total_posts_generated": total_posts,
             "total_tokens_used": total_tokens,
-            "status": "operational"
+            "status": "operational",
         }
 
     except Exception as e:
@@ -210,7 +200,7 @@ async def get_metrics():
             "total_posts_generated": 0,
             "total_tokens_used": 0,
             "status": "error",
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -229,10 +219,7 @@ async def global_exception_handler(request, exc):
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "detail": "An unexpected error occurred",
-            "error": str(exc)
-        }
+        content={"detail": "An unexpected error occurred", "error": str(exc)},
     )
 
 
@@ -245,5 +232,5 @@ if __name__ == "__main__":
         "src.agents.marketing.api:app",
         host=settings.api_host,
         port=settings.api_port,
-        reload=settings.is_development
+        reload=settings.is_development,
     )

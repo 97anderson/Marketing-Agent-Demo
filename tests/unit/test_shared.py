@@ -53,16 +53,16 @@ def mock_chroma_client():
 
     mock_client.get_or_create_collection.return_value = mock_collection
     mock_collection.add = MagicMock()
-    mock_collection.query = MagicMock(return_value={
-        "documents": [["test doc"]],
-        "distances": [[0.5]],
-        "metadatas": [[{"topic": "test"}]]
-    })
-    mock_collection.get = MagicMock(return_value={
-        "ids": ["id1"],
-        "documents": ["doc1"],
-        "metadatas": [{"topic": "test"}]
-    })
+    mock_collection.query = MagicMock(
+        return_value={
+            "documents": [["test doc"]],
+            "distances": [[0.5]],
+            "metadatas": [[{"topic": "test"}]],
+        }
+    )
+    mock_collection.get = MagicMock(
+        return_value={"ids": ["id1"], "documents": ["doc1"], "metadatas": [{"topic": "test"}]}
+    )
 
     return mock_client, mock_collection
 
@@ -85,11 +85,7 @@ def test_vector_database_add_document(mock_chroma_client):
     with patch("chromadb.Client", return_value=mock_client):
         db = VectorDatabase()
 
-        db.add_document(
-            document="Test document",
-            document_id="doc-1",
-            metadata={"topic": "test"}
-        )
+        db.add_document(document="Test document", document_id="doc-1", metadata={"topic": "test"})
 
         mock_collection.add.assert_called_once()
 

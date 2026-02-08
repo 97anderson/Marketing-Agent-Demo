@@ -71,21 +71,19 @@ class MockModel(BaseModel):
         usage = TokenUsage(
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
-            total_tokens=prompt_tokens + completion_tokens
+            total_tokens=prompt_tokens + completion_tokens,
         )
 
         logger.info(f"MockModel: Token Usage - {usage.dict()}")
 
         return InferenceResponse(
-            content=mock_content,
-            model="mock-model",
-            usage=usage,
-            metadata=request.metadata
+            content=mock_content, model="mock-model", usage=usage, metadata=request.metadata
         )
 
     async def _simulate_latency(self) -> None:
         """Simulate API latency."""
         import asyncio
+
         await asyncio.sleep(0.1)  # 100ms simulated latency
 
     def _generate_mock_content(self, prompt: str) -> str:
@@ -139,10 +137,7 @@ class OpenAIModel(BaseModel):
             Configured ChatOpenAI client.
         """
         return ChatOpenAI(
-            api_key=self.api_key,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens
+            api_key=self.api_key, model=model, temperature=temperature, max_tokens=max_tokens
         )
 
     async def generate(self, request: InferenceRequest) -> InferenceResponse:
@@ -160,9 +155,7 @@ class OpenAIModel(BaseModel):
 
         try:
             client = self._get_client(
-                model=request.model,
-                temperature=request.temperature,
-                max_tokens=request.max_tokens
+                model=request.model, temperature=request.temperature, max_tokens=request.max_tokens
             )
 
             messages = [HumanMessage(content=request.prompt)]
@@ -179,20 +172,14 @@ class OpenAIModel(BaseModel):
             usage = TokenUsage(
                 prompt_tokens=token_usage.get("prompt_tokens", 0),
                 completion_tokens=token_usage.get("completion_tokens", 0),
-                total_tokens=token_usage.get("total_tokens", 0)
+                total_tokens=token_usage.get("total_tokens", 0),
             )
 
             elapsed_time = time.time() - start_time
-            logger.info(
-                f"OpenAIModel: Token Usage - {usage.dict()}, "
-                f"Latency: {elapsed_time:.2f}s"
-            )
+            logger.info(f"OpenAIModel: Token Usage - {usage.dict()}, Latency: {elapsed_time:.2f}s")
 
             return InferenceResponse(
-                content=content,
-                model=request.model,
-                usage=usage,
-                metadata=request.metadata
+                content=content, model=request.model, usage=usage, metadata=request.metadata
             )
 
         except Exception as e:
@@ -238,7 +225,7 @@ class InferenceGateway:
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.7,
         max_tokens: int = 500,
-        metadata: dict | None = None
+        metadata: dict | None = None,
     ) -> InferenceResponse:
         """Generate a completion through the gateway.
 
@@ -263,7 +250,7 @@ class InferenceGateway:
             model=model,
             temperature=temperature,
             max_tokens=max_tokens,
-            metadata=metadata
+            metadata=metadata,
         )
 
         logger.info(
@@ -300,5 +287,5 @@ class InferenceGateway:
 
         return cls(
             use_mock=settings.use_mock_model,
-            api_key=settings.openai_api_key if not settings.use_mock_model else None
+            api_key=settings.openai_api_key if not settings.use_mock_model else None,
         )

@@ -24,15 +24,13 @@ from src.gateway.models import (
 def mock_gateway():
     """Create a mock Inference Gateway."""
     gateway = MagicMock()
-    gateway.generate = AsyncMock(return_value=InferenceResponse(
-        content="This is a test LinkedIn post about AI and technology.",
-        model="mock-model",
-        usage=TokenUsage(
-            prompt_tokens=100,
-            completion_tokens=50,
-            total_tokens=150
+    gateway.generate = AsyncMock(
+        return_value=InferenceResponse(
+            content="This is a test LinkedIn post about AI and technology.",
+            model="mock-model",
+            usage=TokenUsage(prompt_tokens=100, completion_tokens=50, total_tokens=150),
         )
-    ))
+    )
     return gateway
 
 
@@ -41,11 +39,9 @@ def mock_database():
     """Create a mock Vector Database."""
     database = MagicMock()
     database.add_document = MagicMock()
-    database.get_all_documents = MagicMock(return_value={
-        "ids": [],
-        "documents": [],
-        "metadatas": []
-    })
+    database.get_all_documents = MagicMock(
+        return_value={"ids": [], "documents": [], "metadatas": []}
+    )
     return database
 
 
@@ -71,9 +67,7 @@ async def test_web_search_tool():
 async def test_generate_post(marketing_agent, mock_gateway):
     """Test post generation."""
     request = GeneratePostRequest(
-        topic="artificial intelligence",
-        tone="professional",
-        max_length=500
+        topic="artificial intelligence", tone="professional", max_length=500
     )
 
     post = await marketing_agent.generate_post(request)
@@ -93,10 +87,7 @@ async def test_generate_post(marketing_agent, mock_gateway):
 @pytest.mark.asyncio
 async def test_generate_post_saves_to_memory(marketing_agent, mock_database):
     """Test that generated posts are saved to ChromaDB."""
-    request = GeneratePostRequest(
-        topic="machine learning",
-        tone="enthusiastic"
-    )
+    request = GeneratePostRequest(topic="machine learning", tone="enthusiastic")
 
     post = await marketing_agent.generate_post(request)
 
@@ -112,11 +103,7 @@ async def test_generate_post_saves_to_memory(marketing_agent, mock_database):
 @pytest.mark.asyncio
 async def test_get_history_empty(marketing_agent, mock_database):
     """Test getting history when no posts exist."""
-    mock_database.get_all_documents.return_value = {
-        "ids": [],
-        "documents": [],
-        "metadatas": []
-    }
+    mock_database.get_all_documents.return_value = {"ids": [], "documents": [], "metadatas": []}
 
     history = marketing_agent.get_history(limit=10)
 
@@ -128,10 +115,7 @@ async def test_get_history_with_posts(marketing_agent, mock_database):
     """Test getting history with existing posts."""
     mock_database.get_all_documents.return_value = {
         "ids": ["post-1", "post-2"],
-        "documents": [
-            "First post content",
-            "Second post content"
-        ],
+        "documents": ["First post content", "Second post content"],
         "metadatas": [
             {
                 "topic": "AI",
@@ -139,7 +123,7 @@ async def test_get_history_with_posts(marketing_agent, mock_database):
                 "created_at": datetime.utcnow().isoformat(),
                 "prompt_tokens": 100,
                 "completion_tokens": 50,
-                "total_tokens": 150
+                "total_tokens": 150,
             },
             {
                 "topic": "ML",
@@ -147,9 +131,9 @@ async def test_get_history_with_posts(marketing_agent, mock_database):
                 "created_at": datetime.utcnow().isoformat(),
                 "prompt_tokens": 120,
                 "completion_tokens": 60,
-                "total_tokens": 180
-            }
-        ]
+                "total_tokens": 180,
+            },
+        ],
     }
 
     history = marketing_agent.get_history(limit=10)
@@ -164,15 +148,11 @@ def test_build_context(marketing_agent):
     """Test context building from search results."""
     search_results = [
         WebSearchResult(
-            title="Test Title 1",
-            snippet="Test snippet 1",
-            url="https://example.com/1"
+            title="Test Title 1", snippet="Test snippet 1", url="https://example.com/1"
         ),
         WebSearchResult(
-            title="Test Title 2",
-            snippet="Test snippet 2",
-            url="https://example.com/2"
-        )
+            title="Test Title 2", snippet="Test snippet 2", url="https://example.com/2"
+        ),
     ]
 
     context = marketing_agent._build_context(search_results)
@@ -188,10 +168,7 @@ def test_build_context(marketing_agent):
 def test_create_prompt(marketing_agent):
     """Test prompt creation."""
     prompt = marketing_agent._create_prompt(
-        topic="AI",
-        context="Test context about AI",
-        tone="professional",
-        max_length=500
+        topic="AI", context="Test context about AI", tone="professional", max_length=500
     )
 
     assert "AI" in prompt

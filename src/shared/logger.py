@@ -19,10 +19,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
     """
 
     def add_fields(
-        self,
-        log_record: dict[str, Any],
-        record: logging.LogRecord,
-        message_dict: dict[str, Any]
+        self, log_record: dict[str, Any], record: logging.LogRecord, message_dict: dict[str, Any]
     ) -> None:
         """Add custom fields to the log record.
 
@@ -65,13 +62,10 @@ def setup_logging() -> None:
 
     # Use JSON formatter for production, simple formatter for development
     if settings.is_production:
-        formatter = CustomJsonFormatter(
-            "%(asctime)s %(level)s %(logger)s %(message)s"
-        )
+        formatter = CustomJsonFormatter("%(asctime)s %(level)s %(logger)s %(message)s")
     else:
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
 
     console_handler.setFormatter(formatter)

@@ -73,7 +73,7 @@ class WebSearchTool:
                     "and cutting-edge technologies. Recent developments show significant "
                     "growth and adoption across multiple sectors."
                 ),
-                url=f"https://example.com/guide-{query.replace(' ', '-').lower()}"
+                url=f"https://example.com/guide-{query.replace(' ', '-').lower()}",
             ),
             WebSearchResult(
                 title=f"Top 10 Trends in {query} for 2026",
@@ -82,7 +82,7 @@ class WebSearchTool:
                     "predict major advancements in the coming months, with key players "
                     "investing heavily in research and development."
                 ),
-                url=f"https://example.com/trends-{query.replace(' ', '-').lower()}"
+                url=f"https://example.com/trends-{query.replace(' ', '-').lower()}",
             ),
             WebSearchResult(
                 title=f"How {query} is Transforming Business Operations",
@@ -91,7 +91,7 @@ class WebSearchTool:
                     "improve efficiency, and drive innovation. Case studies demonstrate "
                     "ROI improvements of up to 40% in early adopters."
                 ),
-                url=f"https://example.com/business-{query.replace(' ', '-').lower()}"
+                url=f"https://example.com/business-{query.replace(' ', '-').lower()}",
             ),
         ]
 
@@ -101,7 +101,4 @@ class WebSearchTool:
         Returns:
             Dictionary with tool name and description.
         """
-        return {
-            "name": self.name,
-            "description": self.description
-        }
+        return {"name": self.name, "description": self.description}

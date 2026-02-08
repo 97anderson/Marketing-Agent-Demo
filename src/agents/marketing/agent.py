@@ -34,9 +34,7 @@ class MarketingAgent:
     """
 
     def __init__(
-        self,
-        gateway: InferenceGateway | None = None,
-        database: VectorDatabase | None = None
+        self, gateway: InferenceGateway | None = None, database: VectorDatabase | None = None
     ):
         """Initialize the Marketing Agent.
 
@@ -50,10 +48,7 @@ class MarketingAgent:
 
         logger.info("MarketingAgent initialized")
 
-    async def generate_post(
-        self,
-        request: GeneratePostRequest
-    ) -> GeneratedPost:
+    async def generate_post(self, request: GeneratePostRequest) -> GeneratedPost:
         """Generate a LinkedIn post on the given topic.
 
         This method:
@@ -78,10 +73,7 @@ class MarketingAgent:
 
         # Step 3: Create the prompt
         prompt = self._create_prompt(
-            topic=request.topic,
-            context=context,
-            tone=request.tone,
-            max_length=request.max_length
+            topic=request.topic, context=context, tone=request.tone, max_length=request.max_length
         )
 
         # Step 4: Generate content using the Inference Gateway
@@ -90,11 +82,7 @@ class MarketingAgent:
             prompt=prompt,
             temperature=0.7,
             max_tokens=800,
-            metadata={
-                "agent": "marketing_agent",
-                "topic": request.topic,
-                "tone": request.tone
-            }
+            metadata={"agent": "marketing_agent", "topic": request.topic, "tone": request.tone},
         )
 
         # Step 5: Create the post object
@@ -105,7 +93,7 @@ class MarketingAgent:
             content=response.content,
             tone=request.tone,
             usage=response.usage,
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
 
         # Step 6: Save to ChromaDB for memory
@@ -126,19 +114,11 @@ class MarketingAgent:
         context_parts = []
 
         for result in search_results:
-            context_parts.append(
-                f"- {result.title}\n  {result.snippet}\n  Source: {result.url}"
-            )
+            context_parts.append(f"- {result.title}\n  {result.snippet}\n  Source: {result.url}")
 
         return "\n\n".join(context_parts)
 
-    def _create_prompt(
-        self,
-        topic: str,
-        context: str,
-        tone: str,
-        max_length: int
-    ) -> str:
+    def _create_prompt(self, topic: str, context: str, tone: str, max_length: int) -> str:
         """Create the prompt for the LLM.
 
         Args:
@@ -182,13 +162,11 @@ Write a compelling LinkedIn post that will drive engagement:"""
                 "created_at": post.created_at.isoformat(),
                 "prompt_tokens": post.usage.prompt_tokens,
                 "completion_tokens": post.usage.completion_tokens,
-                "total_tokens": post.usage.total_tokens
+                "total_tokens": post.usage.total_tokens,
             }
 
             self.database.add_document(
-                document=post.content,
-                document_id=post.id,
-                metadata=metadata
+                document=post.content, document_id=post.id, metadata=metadata
             )
 
             logger.info(f"Post saved to ChromaDB: {post.id}")
@@ -227,11 +205,11 @@ Write a compelling LinkedIn post that will drive engagement:"""
                     usage={
                         "prompt_tokens": metadata.get("prompt_tokens", 0),
                         "completion_tokens": metadata.get("completion_tokens", 0),
-                        "total_tokens": metadata.get("total_tokens", 0)
+                        "total_tokens": metadata.get("total_tokens", 0),
                     },
                     created_at=datetime.fromisoformat(
                         metadata.get("created_at", datetime.utcnow().isoformat())
-                    )
+                    ),
                 )
 
                 posts.append(post)

@@ -24,9 +24,7 @@ class Settings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
     )
 
     # Application Settings
@@ -39,8 +37,7 @@ class Settings(BaseSettings):
 
     # ChromaDB Settings
     chroma_persist_directory: str = Field(
-        default="./data/chroma",
-        description="ChromaDB persistence directory"
+        default="./data/chroma", description="ChromaDB persistence directory"
     )
 
     # API Settings

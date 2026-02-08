@@ -35,15 +35,13 @@ class VectorDatabase:
         settings = get_settings()
 
         logger.info(
-            f"Initializing ChromaDB with persist_directory: "
-            f"{settings.chroma_persist_directory}"
+            f"Initializing ChromaDB with persist_directory: {settings.chroma_persist_directory}"
         )
 
         # Create persistent client
         self.client = chromadb.Client(
             ChromaSettings(
-                persist_directory=settings.chroma_persist_directory,
-                anonymized_telemetry=False
+                persist_directory=settings.chroma_persist_directory, anonymized_telemetry=False
             )
         )
 
@@ -62,16 +60,11 @@ class VectorDatabase:
         if self._collection is None:
             self._collection = self.client.get_or_create_collection(
                 name=self.collection_name,
-                metadata={"description": "Marketing agent generated content storage"}
+                metadata={"description": "Marketing agent generated content storage"},
             )
         return self._collection
 
-    def add_document(
-        self,
-        document: str,
-        document_id: str,
-        metadata: dict | None = None
-    ) -> None:
+    def add_document(self, document: str, document_id: str, metadata: dict | None = None) -> None:
         """Add a document to the vector database.
 
         Args:
@@ -81,20 +74,14 @@ class VectorDatabase:
         """
         try:
             self.collection.add(
-                documents=[document],
-                ids=[document_id],
-                metadatas=[metadata] if metadata else None
+                documents=[document], ids=[document_id], metadatas=[metadata] if metadata else None
             )
             logger.info(f"Document added to ChromaDB: {document_id}")
         except Exception as e:
             logger.error(f"Error adding document to ChromaDB: {str(e)}")
             raise
 
-    def query_documents(
-        self,
-        query_text: str,
-        n_results: int = 5
-    ) -> dict:
+    def query_documents(self, query_text: str, n_results: int = 5) -> dict:
         """Query documents from the vector database.
 
         Args:
@@ -105,10 +92,7 @@ class VectorDatabase:
             Query results with documents, distances, and metadata.
         """
         try:
-            results = self.collection.query(
-                query_texts=[query_text],
-                n_results=n_results
-            )
+            results = self.collection.query(query_texts=[query_text], n_results=n_results)
             logger.info(f"Query executed: found {len(results['documents'][0])} results")
             return results
         except Exception as e:
@@ -125,9 +109,7 @@ class VectorDatabase:
             All documents in the collection.
         """
         try:
-            result = self.collection.get(
-                limit=limit
-            )
+            result = self.collection.get(limit=limit)
             logger.info(f"Retrieved {len(result['ids'])} documents")
             return result
         except Exception as e:

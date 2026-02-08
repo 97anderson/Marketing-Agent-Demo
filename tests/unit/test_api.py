@@ -17,34 +17,30 @@ def mock_agent():
     agent = MagicMock()
 
     # Mock generate_post
-    agent.generate_post = AsyncMock(return_value=GeneratedPost(
-        id="test-post-id",
-        topic="test topic",
-        content="This is a test LinkedIn post.",
-        tone="professional",
-        usage=TokenUsage(
-            prompt_tokens=100,
-            completion_tokens=50,
-            total_tokens=150
-        ),
-        created_at=datetime.utcnow()
-    ))
+    agent.generate_post = AsyncMock(
+        return_value=GeneratedPost(
+            id="test-post-id",
+            topic="test topic",
+            content="This is a test LinkedIn post.",
+            tone="professional",
+            usage=TokenUsage(prompt_tokens=100, completion_tokens=50, total_tokens=150),
+            created_at=datetime.utcnow(),
+        )
+    )
 
     # Mock get_history
-    agent.get_history = MagicMock(return_value=[
-        GeneratedPost(
-            id="post-1",
-            topic="topic 1",
-            content="Content 1",
-            tone="professional",
-            usage=TokenUsage(
-                prompt_tokens=100,
-                completion_tokens=50,
-                total_tokens=150
-            ),
-            created_at=datetime.utcnow()
-        )
-    ])
+    agent.get_history = MagicMock(
+        return_value=[
+            GeneratedPost(
+                id="post-1",
+                topic="topic 1",
+                content="Content 1",
+                tone="professional",
+                usage=TokenUsage(prompt_tokens=100, completion_tokens=50, total_tokens=150),
+                created_at=datetime.utcnow(),
+            )
+        ]
+    )
 
     return agent
 
@@ -80,11 +76,7 @@ def test_health_check(client):
 
 def test_generate_post_endpoint(client, mock_agent):
     """Test the generate post endpoint."""
-    request_data = {
-        "topic": "artificial intelligence",
-        "tone": "professional",
-        "max_length": 500
-    }
+    request_data = {"topic": "artificial intelligence", "tone": "professional", "max_length": 500}
 
     response = client.post("/generate", json=request_data)
 
@@ -104,7 +96,7 @@ def test_generate_post_invalid_data(client):
     """Test generate post with invalid data."""
     request_data = {
         "topic": "",  # Empty topic should fail validation
-        "tone": "professional"
+        "tone": "professional",
     }
 
     response = client.post("/generate", json=request_data)
@@ -145,10 +137,7 @@ def test_generate_post_error_handling(client, mock_agent):
     # Make the mock raise an exception
     mock_agent.generate_post.side_effect = Exception("Test error")
 
-    request_data = {
-        "topic": "test topic",
-        "tone": "professional"
-    }
+    request_data = {"topic": "test topic", "tone": "professional"}
 
     response = client.post("/generate", json=request_data)
 

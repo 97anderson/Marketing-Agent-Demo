@@ -12,8 +12,9 @@ from tests.evaluation.evaluate_agent import PostEvaluator
 def mock_gateway():
     """Create a mock Inference Gateway for evaluation."""
     gateway = MagicMock()
-    gateway.generate = AsyncMock(return_value=InferenceResponse(
-        content='''
+    gateway.generate = AsyncMock(
+        return_value=InferenceResponse(
+            content="""
         {
           "clarity": 9,
           "tone": 8,
@@ -23,14 +24,11 @@ def mock_gateway():
           "length_feedback": "Appropriate length for LinkedIn",
           "overall_feedback": "Excellent post with good structure"
         }
-        ''',
-        model="mock-model",
-        usage=TokenUsage(
-            prompt_tokens=200,
-            completion_tokens=100,
-            total_tokens=300
+        """,
+            model="mock-model",
+            usage=TokenUsage(prompt_tokens=200, completion_tokens=100, total_tokens=300),
         )
-    ))
+    )
     return gateway
 
 
@@ -72,8 +70,9 @@ async def test_evaluate_post_passing(mock_gateway):
 async def test_evaluate_post_failing():
     """Test that low-quality post fails evaluation."""
     gateway = MagicMock()
-    gateway.generate = AsyncMock(return_value=InferenceResponse(
-        content='''
+    gateway.generate = AsyncMock(
+        return_value=InferenceResponse(
+            content="""
         {
           "clarity": 6,
           "tone": 5,
@@ -83,14 +82,11 @@ async def test_evaluate_post_failing():
           "length_feedback": "Acceptable length",
           "overall_feedback": "Needs improvement"
         }
-        ''',
-        model="mock-model",
-        usage=TokenUsage(
-            prompt_tokens=200,
-            completion_tokens=100,
-            total_tokens=300
+        """,
+            model="mock-model",
+            usage=TokenUsage(prompt_tokens=200, completion_tokens=100, total_tokens=300),
         )
-    ))
+    )
 
     evaluator = PostEvaluator(gateway=gateway, pass_threshold=8.0)
     evaluation = await evaluator.evaluate_post("Test content", "test topic")
@@ -121,7 +117,7 @@ def test_parse_evaluation_valid_json(mock_gateway):
     """Test parsing valid evaluation JSON."""
     evaluator = PostEvaluator(gateway=mock_gateway)
 
-    response = '''
+    response = """
     Some text before
     {
       "clarity": 8,
@@ -132,7 +128,7 @@ def test_parse_evaluation_valid_json(mock_gateway):
       "length_feedback": "Acceptable"
     }
     Some text after
-    '''
+    """
 
     evaluation = evaluator._parse_evaluation(response)
 

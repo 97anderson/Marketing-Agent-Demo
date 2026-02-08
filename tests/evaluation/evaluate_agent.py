@@ -61,18 +61,14 @@ class PostEvaluator:
                 prompt=evaluation_prompt,
                 temperature=0.3,  # Lower temperature for consistent evaluation
                 max_tokens=500,
-                metadata={"evaluation": "llm-as-judge", "topic": topic}
+                metadata={"evaluation": "llm-as-judge", "topic": topic},
             )
 
             # Parse the evaluation response
             evaluation = self._parse_evaluation(response.content)
 
             # Calculate average score
-            scores = [
-                evaluation["clarity"],
-                evaluation["tone"],
-                evaluation["length"]
-            ]
+            scores = [evaluation["clarity"], evaluation["tone"], evaluation["length"]]
             average_score = sum(scores) / len(scores)
             evaluation["average_score"] = average_score
             evaluation["passed"] = average_score >= self.pass_threshold
@@ -171,7 +167,7 @@ Be strict but fair. A score of 8+ means excellent quality."""
                 "clarity_feedback": "Could not parse evaluation",
                 "tone_feedback": "Could not parse evaluation",
                 "length_feedback": "Could not parse evaluation",
-                "overall_feedback": "Evaluation parsing failed, using default scores"
+                "overall_feedback": "Evaluation parsing failed, using default scores",
             }
 
 
@@ -205,11 +201,7 @@ async def run_evaluation(test_topics: list[str], pass_threshold: float = 8.0) ->
         try:
             # Generate a post
             logger.info("Step 1: Generating post...")
-            request = GeneratePostRequest(
-                topic=topic,
-                tone="professional",
-                max_length=800
-            )
+            request = GeneratePostRequest(topic=topic, tone="professional", max_length=800)
             post = await agent.generate_post(request)
 
             logger.info(f"\nGenerated Post ({len(post.content)} chars):")
@@ -237,12 +229,14 @@ async def run_evaluation(test_topics: list[str], pass_threshold: float = 8.0) ->
             logger.info(f"\nOverall Feedback:\n{evaluation.get('overall_feedback', 'N/A')}")
             logger.info("=" * 80)
 
-            results.append({
-                "topic": topic,
-                "evaluation": evaluation,
-                "post_length": len(post.content),
-                "token_usage": post.usage.dict()
-            })
+            results.append(
+                {
+                    "topic": topic,
+                    "evaluation": evaluation,
+                    "post_length": len(post.content),
+                    "token_usage": post.usage.dict(),
+                }
+            )
 
             if not evaluation["passed"]:
                 all_passed = False
@@ -253,11 +247,7 @@ async def run_evaluation(test_topics: list[str], pass_threshold: float = 8.0) ->
         except Exception as e:
             logger.error(f"❌ Error testing topic '{topic}': {str(e)}", exc_info=True)
             all_passed = False
-            results.append({
-                "topic": topic,
-                "error": str(e),
-                "passed": False
-            })
+            results.append({"topic": topic, "error": str(e), "passed": False})
 
     # Final summary
     logger.info("\n" + "=" * 80)
@@ -284,7 +274,7 @@ async def main():
     test_topics = [
         "artificial intelligence in healthcare",
         "remote work productivity tips",
-        "sustainable business practices"
+        "sustainable business practices",
     ]
 
     # Run evaluation
