@@ -156,7 +156,7 @@ class TestCritiqueAgent:
 
         assert isinstance(approved, bool)
         assert isinstance(feedback, str)
-        assert isinstance(score, (int, float))
+        assert isinstance(score, int | float)
         assert 0 <= score <= 10
 
     @pytest.mark.asyncio
@@ -173,7 +173,7 @@ class TestCritiqueAgent:
         )
 
         assert isinstance(approved, bool)
-        assert isinstance(score, (int, float))
+        assert isinstance(score, int | float)
         # If not using required hashtags, should have feedback
         if not approved:
             assert len(feedback) > 0
@@ -273,4 +273,4 @@ class TestAgentIntegration:
             tone="professional",
         )
         assert isinstance(approved, bool)
-        assert isinstance(score, (int, float))
+        assert isinstance(score, int | float)

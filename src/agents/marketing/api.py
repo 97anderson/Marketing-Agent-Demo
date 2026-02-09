@@ -44,12 +44,8 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.environment}")
     logger.info(f"Using Mock Model: {settings.use_mock_model}")
 
-    # Initialize the agent (check if multi-agent mode is enabled)
-    agent = MarketingAgent(
-        use_multi_agent=settings.use_multi_agent_flow,
-        critique_threshold=settings.critique_threshold,
-        max_rewrites=settings.max_rewrites,
-    )
+    # Initialize the agent
+    agent = MarketingAgent()
 
     mode = "MULTI-AGENT" if settings.use_multi_agent_flow else "SINGLE-AGENT"
     logger.info(f"Marketing Agent initialized successfully in {mode} mode")
