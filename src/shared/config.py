@@ -44,6 +44,20 @@ class Settings(BaseSettings):
     api_host: str = Field(default="0.0.0.0", description="API host")
     api_port: int = Field(default=8000, description="API port")
 
+    # Multi-Agent Flow Settings
+    use_multi_agent_flow: bool = Field(
+        default=False,
+        description="Enable multi-agent workflow (Planner/Writer/Critique)",
+    )
+    critique_threshold: float = Field(
+        default=8.0,
+        description="Minimum score (0-10) for post approval in multi-agent mode",
+    )
+    max_rewrites: int = Field(
+        default=2,
+        description="Maximum rewrite attempts in multi-agent mode",
+    )
+
     @property
     def is_development(self) -> bool:
         """Check if running in development environment.

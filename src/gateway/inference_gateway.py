@@ -95,19 +95,140 @@ class MockModel(BaseModel):
         Returns:
             Mock generated content.
         """
-        return (
-            "🚀 This is a mock-generated LinkedIn post! 🎯\n\n"
-            "I've been exploring the fascinating world of AI and technology. "
-            "The rapid advancement in this field is truly remarkable. "
-            "From machine learning to natural language processing, "
-            "the possibilities are endless! 💡\n\n"
-            "Key insights:\n"
-            "✅ Innovation drives progress\n"
-            "✅ Continuous learning is essential\n"
-            "✅ Collaboration amplifies impact\n\n"
-            "What are your thoughts on this topic? Let's discuss! 💬\n\n"
-            "#AI #Technology #Innovation #LinkedInPost"
-        )
+        prompt_lower = prompt.lower()
+
+        # Check if this is a critique/evaluation request
+        if "evaluate" in prompt_lower and "evaluation:" in prompt_lower:
+            return self._generate_mock_critique()
+
+        # Check if this is a planning request (PlannerAgent)
+        if (
+            "create an outline" in prompt_lower
+            or "structure for the post" in prompt_lower
+            or "outline for a linkedin post" in prompt_lower
+        ):
+            return self._generate_mock_outline()
+
+        # Check if this is a writing request (WriterAgent)
+        if (
+            "write the linkedin post" in prompt_lower
+            or "create the post content" in prompt_lower
+            or "based on the outline" in prompt_lower
+            or "rewrite" in prompt_lower
+        ):
+            return self._generate_mock_linkedin_post()
+
+        # Default: LinkedIn post content
+        return self._generate_mock_linkedin_post()
+
+    def _generate_mock_linkedin_post(self) -> str:
+        """Generate a mock LinkedIn post content.
+
+        Returns:
+            Mock LinkedIn post.
+        """
+        import random
+
+        hooks = [
+            "🚀 The future of technology is here, and it's transforming everything.",
+            "💡 I've been reflecting on the rapid changes in our industry lately.",
+            "🎯 Let me share something that's been on my mind recently.",
+            "✨ Here's an insight that completely changed my perspective.",
+        ]
+
+        insights = [
+            "Innovation isn't just about technology—it's about solving real problems.",
+            "The key to success is continuous learning and adaptation.",
+            "Collaboration amplifies impact more than individual genius ever could.",
+            "Data-driven decisions are only as good as the questions we ask.",
+        ]
+
+        ctas = [
+            "What's your take on this? Share your thoughts below! 💬",
+            "I'd love to hear your perspective. What has your experience been?",
+            "Let's discuss this further. Drop your insights in the comments!",
+            "Have you experienced something similar? Let's connect and chat!",
+        ]
+
+        hook = random.choice(hooks)
+        insight1 = random.choice(insights)
+        insight2 = random.choice([i for i in insights if i != insight1])
+        cta = random.choice(ctas)
+
+        return f"""{hook}
+
+I've been exploring this fascinating topic, and here are my key takeaways:
+
+✅ {insight1}
+
+✅ {insight2}
+
+✅ The possibilities are endless when we combine creativity with strategic thinking.
+
+{cta}
+
+#Innovation #Technology #Leadership #Growth #LinkedInPost"""
+
+    def _generate_mock_critique(self) -> str:
+        """Generate a mock critique evaluation response.
+
+        Returns:
+            Mock critique in JSON format.
+        """
+        import random
+
+        # Randomly generate scores to simulate variability
+        brand_adherence = random.randint(7, 10)
+        quality = random.randint(7, 10)
+        tone_length = random.randint(7, 10)
+        overall_score = (brand_adherence + quality + tone_length) / 3
+
+        approved = overall_score >= 8.0
+
+        feedback = ""
+        if not approved:
+            feedback_options = [
+                "The hook could be more engaging. Consider starting with a question or surprising statistic.",
+                "The brand voice needs to be more prominent. Incorporate more of the brand's unique personality.",
+                "The call-to-action could be stronger. Make it more specific and compelling.",
+                "Consider adding more concrete examples or data to support your points.",
+            ]
+            feedback = random.choice(feedback_options)
+        else:
+            feedback = "Excellent post! Meets all criteria."
+
+        return f"""{{
+  "score": {overall_score:.1f},
+  "brand_adherence": {brand_adherence},
+  "quality": {quality},
+  "tone_length": {tone_length},
+  "feedback": "{feedback}",
+  "approved": {str(approved).lower()}
+}}"""
+
+    def _generate_mock_outline(self) -> str:
+        """Generate a mock outline for content planning.
+
+        Returns:
+            Mock outline structure.
+        """
+        return """Here's a structured outline for your LinkedIn post:
+
+**HOOK** (First 1-2 lines):
+A compelling question or statement to grab attention
+
+**MAIN CONTENT** (3-5 key points):
+1. First key insight or point
+2. Second key insight with supporting detail
+3. Third key insight (optional)
+
+**CALL-TO-ACTION**:
+Engage with the audience - ask a question or suggest next steps
+
+**HASHTAGS**:
+#RelevantTag1 #RelevantTag2 #RelevantTag3
+
+This structure will ensure engagement and clarity."""
 
 
 class OpenAIModel(BaseModel):

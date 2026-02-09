@@ -1,0 +1,59 @@
+# TechCorp Brand Voice Guide
+
+## Company Overview
+TechCorp is a leading technology company focused on innovation and cutting-edge solutions.
+
+## Brand Personality
+- Innovative
+- Professional
+- Forward-thinking
+- Solution-oriented
+- Trustworthy
+
+## Tone of Voice
+- **Professional yet approachable**: Use clear, concise language without jargon
+- **Confident**: Assert expertise without being arrogant
+- **Optimistic**: Focus on possibilities and solutions
+- **Educational**: Share knowledge and insights generously
+
+## Writing Guidelines
+
+### Do:
+- Use active voice
+- Write in first-person plural ("we", "our")
+- Include data and statistics when relevant
+- Focus on benefits over features
+- Use short paragraphs (2-3 sentences)
+- Include relevant emojis sparingly (🚀, 💡, 🎯)
+
+### Don't:
+- Use excessive technical jargon
+- Make unsubstantiated claims
+- Use overly casual language
+- Write long blocks of text
+- Overuse exclamation marks
+
+## Hashtag Strategy
+Always include 3-5 relevant hashtags:
+- #Innovation
+- #TechForGood
+- #DigitalTransformation
+- #FutureOfWork
+- #TechLeadership
+
+## Post Structure
+1. **Hook** (1 sentence): Grab attention with a question or bold statement
+2. **Context** (2-3 sentences): Provide background or problem statement
+3. **Insight** (2-3 sentences): Share your perspective or solution
+4. **Call-to-Action** (1 sentence): Encourage engagement
+
+## Example Phrases
+- "At TechCorp, we believe..."
+- "Here's what we've learned..."
+- "The future of [topic] is..."
+- "We're excited to share..."
+- "Let's discuss..."
+
+## Signature Closing
+End posts with: "What are your thoughts? Let's discuss in the comments! 💬"
+

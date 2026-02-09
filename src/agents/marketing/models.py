@@ -17,6 +17,7 @@ class GeneratePostRequest(BaseModel):
         topic: The topic for the post.
         tone: The desired tone (professional, casual, enthusiastic).
         max_length: Maximum length in characters.
+        brand_id: Optional brand identifier for brand voice guidelines.
     """
 
     topic: str = Field(..., min_length=1, description="Topic for the LinkedIn post")
@@ -25,6 +26,10 @@ class GeneratePostRequest(BaseModel):
     )
     max_length: int = Field(
         default=500, ge=100, le=3000, description="Maximum length in characters"
+    )
+    brand_id: str | None = Field(
+        default=None,
+        description="Brand identifier for applying brand voice guidelines (e.g., 'techcorp', 'ecolife')",
     )
 
 
@@ -36,16 +41,23 @@ class GeneratedPost(BaseModel):
         topic: The topic of the post.
         content: The generated content.
         tone: The tone used.
+        brand_id: The brand identifier used (if any).
         usage: Token usage information.
         created_at: Timestamp when the post was created.
+        metadata: Optional metadata about the generation process (e.g., multi-agent workflow info).
     """
 
     id: str = Field(..., description="Unique identifier")
     topic: str = Field(..., description="Topic of the post")
     content: str = Field(..., description="Generated content")
     tone: str = Field(..., description="Tone used")
+    brand_id: str | None = Field(default=None, description="Brand identifier used")
     usage: TokenUsage = Field(..., description="Token usage information")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
+    metadata: dict | None = Field(
+        default=None,
+        description="Optional metadata (e.g., workflow type, iterations, scores)",
+    )
 
 
 class GeneratePostResponse(BaseModel):

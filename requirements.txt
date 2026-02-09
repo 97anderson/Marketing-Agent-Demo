@@ -16,6 +16,9 @@ chromadb==0.4.22
 # HTTP Clients
 httpx==0.26.0
 
+# HTML Reports
+jinja2==3.1.2
+
 # Testing
 pytest==7.4.4
 pytest-asyncio==0.23.3

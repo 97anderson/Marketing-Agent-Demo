@@ -18,6 +18,7 @@ from src.agents.marketing.models import (
 )
 from src.shared.config import get_settings
 from src.shared.logger import setup_logging
+from src.shared.trace_logger import get_trace_logger
 
 # Setup logging
 setup_logging()
@@ -43,9 +44,20 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.environment}")
     logger.info(f"Using Mock Model: {settings.use_mock_model}")
 
-    # Initialize the agent
-    agent = MarketingAgent()
-    logger.info("Marketing Agent initialized successfully")
+    # Initialize the agent (check if multi-agent mode is enabled)
+    agent = MarketingAgent(
+        use_multi_agent=settings.use_multi_agent_flow,
+        critique_threshold=settings.critique_threshold,
+        max_rewrites=settings.max_rewrites,
+    )
+
+    mode = "MULTI-AGENT" if settings.use_multi_agent_flow else "SINGLE-AGENT"
+    logger.info(f"Marketing Agent initialized successfully in {mode} mode")
+    if settings.use_multi_agent_flow:
+        logger.info(
+            f"Multi-agent config: threshold={settings.critique_threshold}, "
+            f"max_rewrites={settings.max_rewrites}"
+        )
 
     yield
 
@@ -56,8 +68,8 @@ async def lifespan(app: FastAPI):
 # Create FastAPI application
 app = FastAPI(
     title="Marketing Agent API",
-    description="Content-Creator Agent for generating LinkedIn posts",
-    version="0.1.0",
+    description="Content-Creator Agent for generating LinkedIn posts (Single-Agent and Multi-Agent modes)",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -79,11 +91,19 @@ async def root():
     Returns:
         Welcome message and API information.
     """
+    settings = get_settings()
     return {
         "message": "Marketing Agent API",
-        "version": "0.1.0",
+        "version": "2.0.0",
+        "mode": "multi-agent" if settings.use_multi_agent_flow else "single-agent",
         "docs": "/docs",
         "health": "/health",
+        "features": [
+            "content_generation",
+            "brand_voice",
+            "post_history",
+            "multi_agent_workflow" if settings.use_multi_agent_flow else "single_agent_workflow",
+        ],
     }
 
 
@@ -101,6 +121,14 @@ async def health_check():
         "service": "marketing-agent",
         "environment": settings.environment,
         "using_mock_model": settings.use_mock_model,
+        "agent_mode": "multi-agent" if settings.use_multi_agent_flow else "single-agent",
+        "multi_agent_config": {
+            "enabled": settings.use_multi_agent_flow,
+            "critique_threshold": settings.critique_threshold,
+            "max_rewrites": settings.max_rewrites,
+        }
+        if settings.use_multi_agent_flow
+        else None,
     }
 
 
@@ -174,6 +202,63 @@ async def get_history(limit: int = 10):
         )
 
 
+@app.get("/brands", tags=["Brand Voice"])
+async def list_brands():
+    """List all available brands with voice guidelines.
+
+    Returns:
+        List of available brand identifiers and their information.
+    """
+    try:
+        brands = agent.list_available_brands()
+
+        # Get summary for each brand
+        brand_info = []
+        for brand_id in brands:
+            info = agent.get_brand_info(brand_id)
+            brand_info.append(info)
+
+        return {"brands": brand_info, "total": len(brands)}
+
+    except Exception as e:
+        logger.error(f"Error listing brands: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to list brands: {str(e)}",
+        )
+
+
+@app.get("/brands/{brand_id}", tags=["Brand Voice"])
+async def get_brand(brand_id: str):
+    """Get information about a specific brand.
+
+    Args:
+        brand_id: The brand identifier.
+
+    Returns:
+        Brand information and summary.
+    """
+    try:
+        info = agent.get_brand_info(brand_id)
+
+        if not info["available"]:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Brand '{brand_id}' not found",
+            )
+
+        return info
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting brand info: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get brand info: {str(e)}",
+        )
+
+
 @app.get("/metrics", tags=["Observability"])
 async def get_metrics():
     """Get API metrics and statistics.
@@ -188,9 +273,17 @@ async def get_metrics():
         # Calculate total token usage
         total_tokens = sum(post.usage.total_tokens for post in posts)
 
+        # Count posts by brand
+        posts_by_brand = {}
+        for post in posts:
+            if post.brand_id:
+                posts_by_brand[post.brand_id] = posts_by_brand.get(post.brand_id, 0) + 1
+
         return {
             "total_posts_generated": total_posts,
             "total_tokens_used": total_tokens,
+            "posts_by_brand": posts_by_brand,
+            "available_brands": len(agent.list_available_brands()),
             "status": "operational",
         }
 
@@ -199,9 +292,91 @@ async def get_metrics():
         return {
             "total_posts_generated": 0,
             "total_tokens_used": 0,
+            "posts_by_brand": {},
             "status": "error",
             "error": str(e),
         }
+
+
+@app.post("/report/generate", tags=["Reports"])
+async def generate_html_report():
+    """Generate HTML report from current trace logger.
+
+    This endpoint generates an HTML report from the accumulated
+    trace data and returns the HTML content.
+
+    Returns:
+        HTML content of the report.
+    """
+    try:
+        logger.info("Generating HTML report from trace logger")
+
+        trace = get_trace_logger()
+
+        # Generate report to temporary location
+        import tempfile
+        from pathlib import Path
+
+        temp_dir = Path(tempfile.gettempdir())
+        report_path = temp_dir / "agent_report.html"
+
+        # Generate without auto-open
+        from src.shared.html_reporter import HTMLReporter
+
+        reporter = HTMLReporter(trace)
+        reporter.generate_report(output_path=report_path, auto_open=False)
+
+        # Read and return HTML content
+        html_content = report_path.read_text(encoding="utf-8")
+
+        return JSONResponse(
+            content={"html": html_content, "message": "Report generated successfully"},
+            status_code=status.HTTP_200_OK,
+        )
+
+    except Exception as e:
+        logger.error(f"Error generating report: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate report: {str(e)}",
+        )
+
+
+@app.get("/report/download", tags=["Reports"])
+async def download_html_report():
+    """Download HTML report as file.
+
+    Returns:
+        HTML file download.
+    """
+    try:
+        import tempfile
+        from pathlib import Path
+
+        from fastapi.responses import FileResponse
+
+        trace = get_trace_logger()
+
+        temp_dir = Path(tempfile.gettempdir())
+        report_path = temp_dir / "agent_execution_report.html"
+
+        from src.shared.html_reporter import HTMLReporter
+
+        reporter = HTMLReporter(trace)
+        reporter.generate_report(output_path=report_path, auto_open=False)
+
+        return FileResponse(
+            path=report_path,
+            media_type="text/html",
+            filename="agent_execution_report.html",
+        )
+
+    except Exception as e:
+        logger.error(f"Error generating report: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate report: {str(e)}",
+        )
 
 
 @app.exception_handler(Exception)

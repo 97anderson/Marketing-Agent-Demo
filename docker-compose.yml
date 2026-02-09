@@ -14,8 +14,12 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-mock}
       - USE_MOCK_MODEL=true
       - CHROMA_PERSIST_DIRECTORY=/app/data/chroma
+      - USE_MULTI_AGENT_FLOW=true
+      - CRITIQUE_THRESHOLD=8.0
+      - MAX_REWRITES=2
     volumes:
       - ./src:/app/src
+      - ./knowledge_base:/app/knowledge_base
       - ./data:/app/data
       - ./logs:/app/logs
     command: uvicorn src.agents.marketing.api:app --host 0.0.0.0 --port 8000 --reload

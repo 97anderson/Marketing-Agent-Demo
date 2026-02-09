@@ -16,42 +16,107 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Virtual Environment
+# Virtual Environments
 venv/
-ENV/
 env/
+ENV/
+env.bak/
+venv.bak/
 .venv
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
 
-# Environment
+# Environment Variables (SENSITIVE)
 .env
 .env.local
+.env.*.local
+*.env
 
-# Data & Logs
-data/
-logs/
-*.log
+# API Keys and Secrets (SENSITIVE)
+secrets.json
+credentials.json
+*.pem
+*.key
+*.crt
 
 # Testing
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+junit.xml
+test-results/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Logs
+logs/
+*.log
+log/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# ChromaDB (vector database)
+data/chroma/
+*.chroma
+
+# Cache
+.cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # Docker
-*.dockerignore
+.dockerignore
 
-# OS
+# Generated Files
+*.html
+*.json
+evaluation_results.json
+agent_execution_report.html
+agent_report_*.html
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS Files
 .DS_Store
 Thumbs.db
+desktop.ini
 
+# Documentation Build
+docs/_build/
+docs/.doctrees/
+site/
+
+# CI/CD
+.github/workflows/*.local.yml
